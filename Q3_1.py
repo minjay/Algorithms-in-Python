@@ -4,6 +4,7 @@
 
 import numpy as np
 import math
+import copy
 
 # read
 with open('/Users/minjay/Documents/Documents/Courses/Algorithms_Part1/kargerMinCut.txt') as f:
@@ -34,40 +35,37 @@ for line in graph:
 
 n = len(nodes)
 N = int(math.ceil(n*math.log(n)))
-rec_nodes = nodes
-rec_edges = edges
+# copy the object
+rec_nodes = copy.deepcopy(nodes)
+rec_edges = copy.deepcopy(edges)
 
 # calculate min-cut
 min_cut = len(rec_edges)
 # set seed
 np.random.seed(0)
 for i in range(N):
-	nodes = list(rec_nodes)
-	edges = list(rec_edges)
+	# retrieve the object
+	nodes = copy.deepcopy(rec_nodes)
+	edges = copy.deepcopy(rec_edges)
 	while len(nodes)>2:
 		# high exclusive
 		index = np.random.randint(0, len(edges))
 		remove_edge = edges[index]
 		node1 = remove_edge[0]
-		# remove node2
 		node2 = remove_edge[1]
-		tmp_edges = edges
-		while remove_edge in tmp_edges:
-			edges.remove(remove_edge)
+		# merge
 		for j in range(len(edges)):
 			if edges[j][0]==node2:
 				edges[j][0] = node1
 			if edges[j][1]==node2:
 				edges[j][1] = node1
-		print(len(nodes))
+		# remove node2
 		nodes.remove(node2)
-		# remove self-loop
-		tmp_edges = edges
+		# remove self-loops
+		tmp_edges = copy.deepcopy(edges)
 		for j in tmp_edges:
 			if j[0]==j[1]:
-				# remove all
-				while j in edges:
-					edges.remove(j)
+				edges.remove(j)
 	print(len(edges))
 	if len(edges)<min_cut:
 		min_cut = len(edges)
